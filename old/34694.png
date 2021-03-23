@@ -1,2 +1,0 @@
-Exception during execution: NCBI C++ Exception:
-    Error: IMAGE(CException::eUnknown) "/panfs/pan1.be-md.ncbi.nlm.nih.gov/structure_build/build_2019-04-17/c++/src/internal/structure/PubChem/www/image/imagefly.cpp", line 326: ncbi::ImageFly::ProcessRequest() --- Cid2CompoundObject() failed for cid 34694
