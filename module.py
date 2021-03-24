@@ -21,7 +21,7 @@ class linearnet(nn.Module):
             nn.LeakyReLU(inplace=True),
             nn.Linear(1000, 1000),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(1000, 200),
+            nn.Linear(1000, 300),
             nn.LeakyReLU(inplace=True),
         )
 

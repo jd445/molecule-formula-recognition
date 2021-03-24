@@ -17,6 +17,9 @@ from module import linearnet
 
 def main():
     # 设置数据集大小
+
+    print(torch.__version__)
+    print(torch.cuda.is_available())
     devide_test_train(2000)
 
     text_transforms = transforms.Compose([
@@ -28,7 +31,7 @@ def main():
     # 然后就是调用DataLoader和刚刚创建的数据集，来创建dataloader，这里提一句，loader的长度是有多少个batch，所以和batch_size有关
     train_loader = DataLoader(
         dataset=train_data,
-        batch_size=6,
+        batch_size=10,
         shuffle=True,
         num_workers=4
     )
@@ -42,32 +45,56 @@ def main():
 # drop_last：bool，可选。True表示如果最后剩下不完全的batch, 丢弃。False表示不丢弃。
     test_loader = DataLoader(
         dataset=test_data,
-        batch_size=6,
+        batch_size=10,
         shuffle=False,
         num_workers=4
     )
     print('num_of_trainData:', len(train_data))
     print('num_of_testData:', len(test_data))
-    net = linearnet().cuda()
+    device = ('cuda' if torch.cuda.is_available() else 'cpu')
+    # net = linearnet().cuda()
+    net = linearnet().to(device)
     optimizer = optim.SGD(net.parameters(), lr=0.005)
-    criteon = nn.CrossEntropyLoss().cuda()
+    criteon = nn.CrossEntropyLoss().to(device)
+
+    # for epoch in range(epoch_num):
+    #     for batch_idx, (data, target) in enumerate(train_loader, 0):
+    #         data, target = Variable(data).to(device), Variable(target.long()).to(device)
+    #         optimizer.zero_grad()  # 梯度清0
+    #         output = model(data)[0]  # 前向传播
+    #         loss = criterion(output, target)  # 计算误差
+    #         loss.backward()  # 反向传播
+    #         optimizer.step()  # 更新参数
+    #         if batch_idx % 10 == 0:
+    #             print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+    #                 epoch, batch_idx * len(data), len(train_loader.dataset),
+    #                        100. * batch_idx / len(train_loader), loss.item()))
+
+    # torch.save(model, 'cnn.pkl')
+
+
     # 接下来是复制粘贴
-    for epoch in range(10):
+    for epoch in range(2):
 
-        for batch_idx, (data, target) in enumerate(train_loader):
-            data = data.view(-1, 100 * 100).cuda()
-            target = target.cuda()
-
-            logits = net(data).cuda()
+        for batch_idx, (data, target) in enumerate(train_loader,0):
+            data = data.view(-1, 100 * 100).to(device)
+            target = target.long().to(device)
+            optimizer.zero_grad()
+            logits = net(data).to(device)
             loss = criteon(logits, target)
 
-            optimizer.zero_grad()
+
             loss.backward()
             # print(w1.grad.norm(), w2.grad.norm())
             optimizer.step()
+            if batch_idx % 10 == 0:
+                print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                    epoch, batch_idx * len(data), len(train_loader.dataset),
+                           100. * batch_idx / len(train_loader), loss.item()))
 
         test_loss = 0
         correct = 0
+
         for data, target in test_loader:
             data = data.view(-1, 100 * 100)
             logits = net(data)
