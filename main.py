@@ -26,6 +26,14 @@ def main():
         shuffle=True,
         num_workers=4
     )
+# dataset：Dataset类型，从其中加载数据
+# batch_size：int，可选。每个batch加载多少样本
+# shuffle：bool，可选。为True时表示每个epoch都对数据进行洗牌
+# sampler：Sampler，可选。从数据集中采样样本的方法。
+# num_workers：int，可选。加载数据时使用多少子进程。默认值为0，表示在主进程中加载数据。
+# collate_fn：callable，可选。
+# pin_memory：bool，可选
+# drop_last：bool，可选。True表示如果最后剩下不完全的batch, 丢弃。False表示不丢弃。
     test_loader = DataLoader(
         dataset=test_data,
         batch_size=6,
