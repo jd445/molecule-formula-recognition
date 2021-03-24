@@ -12,13 +12,19 @@ from PIL import Image
 import numpy as np
 import torch.optim as optim
 from data_load_treatment import MyDataset, devide_test_train, default_loader
+from module import linearnet
 
 
 def main():
     # 设置数据集大小
     devide_test_train(2000)
-    train_data = MyDataset(txt='train.txt', transform=transforms.ToTensor())
-    test_data = MyDataset(txt='test.txt', transform=transforms.ToTensor())
+
+    text_transforms = transforms.Compose([
+        transforms.Resize((100, 100)),
+        transforms.ToTensor(),
+    ])
+    train_data = MyDataset(txt='train.txt', transform=text_transforms)
+    test_data = MyDataset(txt='test.txt', transform=text_transforms)
     # 然后就是调用DataLoader和刚刚创建的数据集，来创建dataloader，这里提一句，loader的长度是有多少个batch，所以和batch_size有关
     train_loader = DataLoader(
         dataset=train_data,
@@ -42,10 +48,38 @@ def main():
     )
     print('num_of_trainData:', len(train_data))
     print('num_of_testData:', len(test_data))
+    net = linearnet().cuda()
+    optimizer = optim.SGD(net.parameters(), lr=0.005)
+    criteon = nn.CrossEntropyLoss().cuda()
+    # 接下来是复制粘贴
+    for epoch in range(10):
+
+        for batch_idx, (data, target) in enumerate(train_loader):
+            data = data.view(-1, 100 * 100).cuda()
+            target = target.cuda()
+
+            logits = net(data).cuda()
+            loss = criteon(logits, target)
+
+            optimizer.zero_grad()
+            loss.backward()
+            # print(w1.grad.norm(), w2.grad.norm())
+            optimizer.step()
+
+        test_loss = 0
+        correct = 0
+        for data, target in test_loader:
+            data = data.view(-1, 100 * 100)
+            logits = net(data)
+            test_loss += criteon(logits, target).item()
+
+            pred = logits.data.max(1)[1]
+            correct += pred.eq(target.data).sum()
+
+        test_loss /= len(test_loader.dataset)
+        print(epoch, test_loss)
     return 0
 
 
 if __name__ == '__main__':
-    # pil_img = Image.open("F:\化学人的大创\开始github\pic_of_molecules\\500.png")
-    # img = np.array(pil_img)
     main()

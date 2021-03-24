@@ -11,17 +11,17 @@ import numpy as np
 import torch.optim as optim
 
 
-class MLP(nn.Module):
+class linearnet(nn.Module):
 
     def __init__(self):
-        super(MLP, self).__init__()
+        super(linearnet, self).__init__()
 
         self.model = nn.Sequential(
-            nn.Linear(2500, 200),
+            nn.Linear(10000, 1000),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(200, 200),
+            nn.Linear(1000, 1000),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(200, 10),
+            nn.Linear(1000, 200),
             nn.LeakyReLU(inplace=True),
         )
 

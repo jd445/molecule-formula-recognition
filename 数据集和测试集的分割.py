@@ -4,15 +4,15 @@
 import random
 import time
 
-f = open("jj.txt", "r")
-fw = open("test.txt", "w")
-fww = open("train.txt", "w")
 
 
-def test():
+
+def devide_test_train():
+    f = open("jj.txt", "r")
+    fw = open("test.txt", "w")
+    fww = open("train.txt", "w")
     raw_list = f.readlines()
     random.shuffle(raw_list)
-    print(raw_list)
     for i in range(2000):
         fw.writelines(raw_list[i])
         raw_list.remove(raw_list[i])

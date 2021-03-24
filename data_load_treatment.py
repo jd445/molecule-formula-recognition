@@ -42,8 +42,8 @@ class MyDataset(Dataset):  # 创建自己的类：MyDataset,这个类是继承�
             words = line.split()  # 用split将该行分割成列表  split的默认参数是空格，所以不传递任何参数时分割空格
             try:
                 # pic_of_molecules/506.png
-                print(
-                    ("pic_of_molecules/{}.png".format(words[0]), int(words[1])))
+                # print(
+                #     ("pic_of_molecules/{}.png".format(words[0]), int(words[1])))
                 niu = "pic_of_molecules/{}.png".format(words[0])
                 # 把txt里的内容读入imgs列表保存，具体是words几要看txt内容而定
                 imgs.append((niu, int(words[1])))
@@ -75,10 +75,6 @@ class MyDataset(Dataset):  # 创建自己的类：MyDataset,这个类是继承�
 #     transforms.RandomRotation(30),
 #     transforms.ToTensor(),
 # ])
-# text_transforms = transforms.Compose([
-#     transforms.RandomResizedCrop((227, 227)),
-#     transforms.ToTensor(),
-# # ])
 
 
 # devide_test_train(2000)
