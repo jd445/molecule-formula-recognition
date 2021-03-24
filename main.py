@@ -12,8 +12,8 @@ def main():
 
 
 if __name__ == '__main__':
-    pil_img = Image.open(
-        'E:\化学人的项目\molecule-formula-recognition\pic_of_molecules\504.png')
+    pil_img = Image.open("F:\化学人的大创\开始github\pic_of_molecules\\500.png")
     img = np.array(pil_img)
+
     print(img)
     main()
