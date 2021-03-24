@@ -1,18 +1,19 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from PIL import Image
+import numpy as np
 import torch
-import numpy
-import datatreatment
 
 
 def main():
-
-
-
-
 
     return 0
 
 
 if __name__ == '__main__':
+    pil_img = Image.open(
+        'E:\化学人的项目\molecule-formula-recognition\pic_of_molecules\504.png')
+    img = np.array(pil_img)
+    print(img)
     main()
-
-
