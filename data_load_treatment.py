@@ -10,10 +10,24 @@ from PIL import Image
 import numpy as np
 import torch.optim as optim
 import os
+import random
+
+
+def devide_test_train(num=2000):
+    f = open("jj.txt", "r")
+    fw = open("test.txt", "w")
+    fww = open("train.txt", "w")
+    raw_list = f.readlines()
+    random.shuffle(raw_list)
+    for i in range(num):
+        fw.writelines(raw_list[i])
+        raw_list.remove(raw_list[i])
+    for i in raw_list:
+        fww.writelines(i)
 
 
 def default_loader(path):
-    return Image.open(path).convert('RGB')
+    return Image.open(path).convert('L')
 
 
 class MyDataset(Dataset):  # 创建自己的类：MyDataset,这个类是继承的torch.utils.data.Dataset
@@ -56,22 +70,23 @@ class MyDataset(Dataset):  # 创建自己的类：MyDataset,这个类是继承�
 # 根据自己定义的那个MyDataset来创建数据集！注意是数据集！而不是loader迭代器
 # *********************************************数据集读取完毕********************************************************************
 # 图像的初始化操作
-train_transforms = transforms.Compose([
-    transforms.RandomResizedCrop((227, 227)),
-    transforms.ToTensor(),
-])
-text_transforms = transforms.Compose([
-    transforms.RandomResizedCrop((227, 227)),
-    transforms.ToTensor(),
-])
+# 这里我个人觉得其实啥都不需要，至少目前是这样的
+# train_transforms = transforms.Compose([
+#     transforms.RandomRotation(30),
+#     transforms.ToTensor(),
+# ])
+# text_transforms = transforms.Compose([
+#     transforms.RandomResizedCrop((227, 227)),
+#     transforms.ToTensor(),
+# # ])
 
-# 数据集加载方式设置
-train_data = MyDataset(txt='jj.txt', transform=transforms.ToTensor())
-# test_data = MyDataset(txt='jj.txt', transform=transforms.ToTensor())
-# 然后就是调用DataLoader和刚刚创建的数据集，来创建dataloader，这里提一句，loader的长度是有多少个batch，所以和batch_size有关
-train_loader = DataLoader(
-    dataset=train_data, batch_size=6, shuffle=True, num_workers=4)
-# test_loader = DataLoader(dataset=test_data, batch_size=6,
-#                          shuffle=False, num_workers=4)
-print('num_of_trainData:', len(train_data))
+
+# devide_test_train(2000)
+# # 数据集加载方式设置
+# train_data = MyDataset(txt='train.txt', transform=transforms.ToTensor())
+# test_data = MyDataset(txt='test.txt', transform=transforms.ToTensor())
+# # 然后就是调用DataLoader和刚刚创建的数据集，来创建dataloader，这里提一句，loader的长度是有多少个batch，所以和batch_size有关
+# train_loader = DataLoader(dataset=train_data, batch_size=6, shuffle=True, num_workers=4)
+# test_loader = DataLoader(dataset=test_data, batch_size=6,shuffle=False, num_workers=4)
+# print('num_of_trainData:', len(train_data))
 # print('num_of_testData:', len(test_data))
