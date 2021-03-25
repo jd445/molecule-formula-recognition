@@ -19,7 +19,7 @@ if __name__ == "__main__":
     pool = Pool(30)
     for n in range(0, 500):
         ""
-        url = "https://pubchem.ncbi.nlm.nih.gov/image/imagefly.cgi?cid=50&width=500&height=500"
+        url = "https://pubchem.ncbi.nlm.nih.gov/image/imagefly.cgi?cid=50&width=100&height=100"
         pool.apply_async(mission, (url, n))
     pool.close()
     pool.join()

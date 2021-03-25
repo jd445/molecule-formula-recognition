@@ -13,6 +13,8 @@ import numpy as np
 import torch.optim as optim
 from data_load_treatment import MyDataset, devide_test_train, default_loader
 from module import linearnet
+from module import ResNet18,ResBlk
+import os
 
 
 def main():
@@ -20,7 +22,7 @@ def main():
 
     print(torch.__version__)
     print(torch.cuda.is_available())
-    devide_test_train(2000)
+    devide_test_train(1000)
 
     text_transforms = transforms.Compose([
         transforms.Resize((100, 100)),
@@ -31,7 +33,7 @@ def main():
     # 然后就是调用DataLoader和刚刚创建的数据集，来创建dataloader，这里提一句，loader的长度是有多少个batch，所以和batch_size有关
     train_loader = DataLoader(
         dataset=train_data,
-        batch_size=10,
+        batch_size=64,
         shuffle=True,
         num_workers=4
     )
@@ -45,67 +47,137 @@ def main():
 # drop_last：bool，可选。True表示如果最后剩下不完全的batch, 丢弃。False表示不丢弃。
     test_loader = DataLoader(
         dataset=test_data,
-        batch_size=10,
+        batch_size=64,
         shuffle=False,
         num_workers=4
     )
     print('num_of_trainData:', len(train_data))
     print('num_of_testData:', len(test_data))
-    device = ('cuda' if torch.cuda.is_available() else 'cpu')
-    # net = linearnet().cuda()
-    net = linearnet().to(device)
-    optimizer = optim.SGD(net.parameters(), lr=0.005)
+
+
+#     #########################################################################################################################
+#     device = ('cuda' if torch.cuda.is_available() else 'cpu')
+#     # net = linearnet().cuda()
+#     if hasattr(torch.cuda, 'empty_cache'):
+#         torch.cuda.empty_cache()
+#     net = linearnet().to(device)
+#     if hasattr(torch.cuda, 'empty_cache'):
+#         torch.cuda.empty_cache()
+#
+#
+#     optimizer = optim.SGD(net.parameters(), lr=0.01)
+#     criteon = nn.CrossEntropyLoss().to(device)
+#
+#     # for epoch in range(epoch_num):
+#     #     for batch_idx, (data, target) in enumerate(train_loader, 0):
+#     #         data, target = Variable(data).to(device), Variable(target.long()).to(device)
+#     #         optimizer.zero_grad()  # 梯度清0
+#     #         output = model(data)[0]  # 前向传播
+#     #         loss = criterion(output, target)  # 计算误差
+#     #         loss.backward()  # 反向传播
+#     #         optimizer.step()  # 更新参数
+#     #         if batch_idx % 10 == 0:
+#     #             print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+#     #                 epoch, batch_idx * len(data), len(train_loader.dataset),
+#     #                        100. * batch_idx / len(train_loader), loss.item()))
+#
+#     # torch.save(model, 'cnn.pkl')
+#
+#
+#     # 接下来是复制粘贴
+#     for epoch in range(1):
+#
+#         for batch_idx, (data, target) in enumerate(train_loader,0):
+#             data = data.view(-1, 100 * 100).to(device)
+#             target = target.long().to(device)
+#             optimizer.zero_grad()
+#             logits = net(data).to(device)
+#             loss = criteon(logits, target)
+#
+#
+#             loss.backward()
+#             # print(w1.grad.norm(), w2.grad.norm())
+#             optimizer.step()
+#             if batch_idx % 10 == 0:
+#                 print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+#                     epoch, batch_idx * len(data), len(train_loader.dataset),
+#                            100. * batch_idx / len(train_loader), loss.item()))
+#
+#         test_loss = 0
+#         correct = 0
+#
+#         for data, target in test_loader:
+#             data = data.view(-1, 100 * 100).to(device)
+#             target = target.long().to(device)
+#             logits = net(data).to(device)
+#             test_loss += criteon(logits, target).item()
+#
+#             pred = logits.data.max(1)[1]
+#             correct += pred.eq(target.data).sum()
+#
+#         test_loss /= len(test_loader.dataset)
+#         print(epoch, test_loss)
+#         print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+#             test_loss, correct, len(test_loader.dataset),
+#             100. * correct / len(test_loader.dataset)))
+#     os.system("pause")
+#     return 0
+# #########################################################################################################################3
+
+    device = torch.device('cuda')
+    # model = Lenet5().to(device)
+    model = ResNet18().to(device)
+
     criteon = nn.CrossEntropyLoss().to(device)
+    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    print(model)
 
-    # for epoch in range(epoch_num):
-    #     for batch_idx, (data, target) in enumerate(train_loader, 0):
-    #         data, target = Variable(data).to(device), Variable(target.long()).to(device)
-    #         optimizer.zero_grad()  # 梯度清0
-    #         output = model(data)[0]  # 前向传播
-    #         loss = criterion(output, target)  # 计算误差
-    #         loss.backward()  # 反向传播
-    #         optimizer.step()  # 更新参数
-    #         if batch_idx % 10 == 0:
-    #             print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-    #                 epoch, batch_idx * len(data), len(train_loader.dataset),
-    #                        100. * batch_idx / len(train_loader), loss.item()))
+    for epoch in range(1000):
 
-    # torch.save(model, 'cnn.pkl')
+        model.train()
+        for batchidx, (x, label) in enumerate(train_loader,0):
+            # [b, 3, 32, 32]
+            # [b]
+            x, label = x.to(device), label.cuda()
 
+            logits = model(x)
+            # logits: [b, 10]
+            # label:  [b]
+            # loss: tensor scalar
+            loss = criteon(logits, label)
 
-    # 接下来是复制粘贴
-    for epoch in range(2):
-
-        for batch_idx, (data, target) in enumerate(train_loader,0):
-            data = data.view(-1, 100 * 100).to(device)
-            target = target.long().to(device)
+            # backprop
             optimizer.zero_grad()
-            logits = net(data).to(device)
-            loss = criteon(logits, target)
-
-
             loss.backward()
-            # print(w1.grad.norm(), w2.grad.norm())
             optimizer.step()
-            if batch_idx % 10 == 0:
-                print('Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    epoch, batch_idx * len(data), len(train_loader.dataset),
-                           100. * batch_idx / len(train_loader), loss.item()))
 
-        test_loss = 0
-        correct = 0
 
-        for data, target in test_loader:
-            data = data.view(-1, 100 * 100)
-            logits = net(data)
-            test_loss += criteon(logits, target).item()
+        #
+        print(epoch, 'loss:', loss.item())
 
-            pred = logits.data.max(1)[1]
-            correct += pred.eq(target.data).sum()
 
-        test_loss /= len(test_loader.dataset)
-        print(epoch, test_loss)
-    return 0
+        model.eval()
+        with torch.no_grad():
+            # test
+            total_correct = 0
+            total_num = 0
+            for x, label in test_loader:
+                # [b, 3, 32, 32]
+                # [b]
+                x, label = x.to(device), label.long().to(device)
+
+                # [b, 10]
+                logits = model(x)
+                # [b]
+                pred = logits.argmax(dim=1)
+                # [b] vs [b] => scalar tensor
+                correct = torch.eq(pred, label).float().sum().item()
+                total_correct += correct
+                total_num += x.size(0)
+                # print(correct)
+
+            acc = total_correct / total_num
+            print(epoch, 'acc:', acc)
 
 
 if __name__ == '__main__':
