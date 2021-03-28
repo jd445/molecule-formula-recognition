@@ -45,9 +45,9 @@ class ResBlk(nn.Module):
         """
         super(ResBlk, self).__init__()
 
-        self.conv1 = nn.Conv2d(ch_in, ch_out, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(ch_in, ch_out, kernel_size=5, stride=2, padding=3)
         self.bn1 = nn.BatchNorm2d(ch_out)
-        self.conv2 = nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(ch_out, ch_out, kernel_size=3, stride=2, padding=3)
         self.bn2 = nn.BatchNorm2d(ch_out)
 
         self.extra = nn.Sequential()
@@ -80,12 +80,12 @@ class ResNet18(nn.Module):
         super(ResNet18, self).__init__()
 
         self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1),
+            nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=3),
             nn.BatchNorm2d(16)
         )
         # followed 4 blocks
         # [b, 64, h, w] => [b, 128, h ,w]
-        self.blk1 = ResBlk(16, 16)
+        self.blk1 = ResBlk(16, 8)
         # [b, 128, h, w] => [b, 256, h, w]
         self.blk2 = ResBlk(16, 32)
         # # [b, 256, h, w] => [b, 512, h, w]
