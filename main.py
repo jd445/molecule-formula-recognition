@@ -67,7 +67,7 @@ def main():
     optimizer = optim.SGD(net.parameters(), lr=0.01)
     criteon = nn.CrossEntropyLoss().to(device)
     # 接下来是复制粘贴
-    for epoch in range(2):
+    for epoch in range(10):
 
         for batch_idx, (data, target) in enumerate(train_loader, 0):
             data = data.view(-1, 100 * 100).to(device)
@@ -86,7 +86,6 @@ def main():
 
         test_loss = 0
         correct = 0
-
         for data, target in test_loader:
             data = data.view(-1, 100 * 100)
             logits = net(data)
