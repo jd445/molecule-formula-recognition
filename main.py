@@ -35,7 +35,7 @@ def main():
         dataset=train_data,
         batch_size=16,
         shuffle=True,
-        num_workers=4
+        num_workers=0
     )
 # dataset：Dataset类型，从其中加载数据
 # batch_size：int，可选。每个batch加载多少样本
@@ -49,7 +49,7 @@ def main():
         dataset=test_data,
         batch_size=16,
         shuffle=False,
-        num_workers=4
+        num_workers=0
     )
     print('num_of_trainData:', len(train_data))
     print('num_of_testData:', len(test_data))
@@ -67,7 +67,7 @@ def main():
     optimizer = optim.SGD(net.parameters(), lr=0.01)
     criteon = nn.CrossEntropyLoss().to(device)
     # 接下来是复制粘贴
-    for epoch in range(10):
+    for epoch in range(2):
 
         for batch_idx, (data, target) in enumerate(train_loader, 0):
             data = data.view(-1, 100 * 100).to(device)
