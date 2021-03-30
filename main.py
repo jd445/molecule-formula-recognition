@@ -25,7 +25,7 @@ def main():
     devide_test_train(1000)
 
     text_transforms = transforms.Compose([
-        transforms.Resize(100, 100),
+        transforms.Resize((100, 100)),
         transforms.ToTensor(),
     ])
     train_data = MyDataset(txt='train.txt', transform=text_transforms)

@@ -19,13 +19,11 @@ class linearnet(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(10000, 10000),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(10000, 8000),
+            nn.Linear(10000, 2000),
             nn.LeakyReLU(inplace=True),
-            nn.Linear(1000, 200),
-            nn.LeakyReLU(inplace=True),
-            nn.Linear(5000, 3000),
-            nn.LeakyReLU(inplace=True),
-            nn.Linear(3000, 250),
+            nn.Linear(2000, 250),
+            # nn.LeakyReLU(inplace=True),
+            # nn.Linear(3000, 250),
         )
 
     def forward(self, x):
